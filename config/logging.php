@@ -48,12 +48,16 @@ return [
     |                    "errorlog", "monolog",
     |                    "custom", "stack"
     |
+    | kita juga bisa membuat channel dengan menggunakan handler dan streamHandler yang ada di Monolog, lihat contoh channel
+    | file dan penjelasan nya ada di chapter 78, dan juga kita bisa menggunakan Formatter dari Monolog untuk mengubah format data
+    | misal ke json, kita cukup buat tau ubah value formatter ke class formatter nya
+    |
     */
 
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', "slack", "stderr"],
             'ignore_exceptions' => false,
         ],
 
@@ -75,7 +79,7 @@ return [
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
-            'level' => env('LOG_LEVEL', 'critical'),
+            'level' => env('LOG_LEVEL_SLACK', 'error'),
         ],
 
         'papertrail' => [
@@ -116,6 +120,15 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+        "file" => [
+            "driver" => "monolog",
+            "level" => env("LOG_LEVEL", "debug"),
+            "handler" => StreamHandler::class,
+            "formatter" => \Monolog\Formatter\JsonFormatter::class,
+            "with" => [
+                "stream" => storage_path("logs/application.log"),
+            ],
         ],
     ],
 
